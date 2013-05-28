@@ -6,7 +6,7 @@ Asynchronous Future implementation for Android
 Flibture is a library for using futures in Android. You can start an asynchronous task which will return a Future object. To this Future you can attach a callback. This callback will be fired in case of success or error. Depending on success or error the appropriate method of the callback will be executed. The library has it's own class for using Asynchronous tasks. The FutureTask class.
 Why use Flibture?
 =================
-Handling asynchronous task in android can be quite messy leaving scattered pieces everywhere in your code making it unreadable. And handling the response can be a real pain. Using Flibture improves the structuring of your code and leaves less tracks handling the response of an asynchronous task. The main advantage of using Flibture over the Android built-in AsyncTask, is that the handling of the result can be written where the call to execute something asynchronously is made. When using AsyncTask, the result will be handled is the separate AsyncTask class, which makes the code less readable. 
+Handling asynchronous task in android can be quite messy leaving scattered pieces everywhere in your code making it unreadable. And handling the response can be a real pain. Using Flibture improves the structuring of your code and leaves less tracks handling the response of an asynchronous task. The main advantage of using Flibture over the Android built-in AsyncTask, is that the handling of the result can be done where ever you want. When using AsyncTask, the result will be handled in the separate AsyncTask class, which makes the code less readable. 
 
 Using AsyncTask to process a String:
 ====================================
