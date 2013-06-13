@@ -11,41 +11,41 @@ Handling asynchronous task in android can be quite messy leaving scattered piece
 Using AsyncTask to process a String:
 ====================================
 ```java
-	public void doSomethingUsingAsyncTask() {
- 
- 		MyAsyncTask myAsyncTask = new MyAsyncTask();
-		myAsyncTask.execute("Leuven");
-	}
- 
-	@Override
-	public void update(Observable arg0, Object result) {
-    	// Handle the result
-    	myTextView.setText((CharSequence) result);
-	}
- 
-	public class MyAsyncTask extends Observable {
- 
-    	public void execute(String... params) {
-        	new Task().execute(params);
-    	}
- 
-    	class Task extends AsyncTask<String, String, String> {
- 
-        	@Override
-        	protected String doInBackground(String... params) {
-            	// Implementation of asynchronous task
-            	String location = LocationService.getLocation(params[0]);
-            	return location;
-        	}
- 
-     	   @Override
-        	protected void onPostExecute(String result) {
-        	     // Notify activity
-        	     setChanged();
-        	     notifyObservers(result);
-        	}
-   	 }
-	}
+public void doSomethingUsingAsyncTask() {
+
+    MyAsyncTask myAsyncTask = new MyAsyncTask();
+    myAsyncTask.execute("Leuven");
+}
+
+@Override
+public void update(Observable arg0, Object result) {
+    // Handle the result
+    myTextView.setText((CharSequence) result);
+}
+
+public class MyAsyncTask extends Observable {
+
+    public void execute(String... params) {
+        new Task().execute(params);
+    }
+
+    class Task extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            // Implementation of asynchronous task
+            String location = LocationService.getLocation(params[0]);
+            return location;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+             // Notify activity
+             setChanged();
+             notifyObservers(result);
+        }
+    }
+}
 ```
 Because AsyncTask has to handle the result and does not have has access to UI components, the observer pattern has to be used to update the activity. 
 
@@ -53,35 +53,35 @@ Performing the same task using Flibture:
 ========================================
 
 ```java	
-	public void doSomethingUsingFlibture() {
- 
-    		MyFutureTask myFutureTask = new MyFutureTask();
-    		Future<String> myFuture = myFutureTask.executeFuture("Leuven");
-    		Future.whenResolved(myFuture, new FutureCallable<String>() {
- 
-        		@Override
-        		public void onError(Exception exception) {
-        		    // Handle the exception
-        		    exception.printStackTrace();
-        		}
- 	
-        		@Override
-        		public void onSucces(String result) {
-        		    // Handle the result
-        		    myTextView.setText(result);
-        		}
-    		});
-    	}
- 
-	public class MyFutureTask extends FutureTask<String, String> {
- 
-    		@Override
-    		protected String doInBackgroundFuture(String... arg0) throws Exception {
-        		// Implementation of asynchronous task
-        		String location = LocationService.getLocation(params[0]);
-        		return location;
-    		}
-	}
+public void doSomethingUsingFlibture() {
+
+    MyFutureTask myFutureTask = new MyFutureTask();
+    Future<String> myFuture = myFutureTask.executeFuture("Leuven");
+    Future.whenResolved(myFuture, new FutureCallable<String>() {
+
+        @Override
+        public void onError(Exception exception) {
+            // Handle the exception
+            exception.printStackTrace();
+        }
+
+        @Override
+        public void onSucces(String result) {
+            // Handle the result
+            myTextView.setText(result);
+        }
+    });
+}
+
+public class MyFutureTask extends FutureTask<String, String> {
+
+    @Override
+    protected String doInBackgroundFuture(String... arg0) throws Exception {
+        // Implementation of asynchronous task
+        String location = LocationService.getLocation(params[0]);
+        return location;
+    }
+}
 ```	
 By using Flibture the result can be handled anywhere. This way there is no need for an observer pattern.
 
@@ -100,46 +100,46 @@ First making an asynchronous task. You should now use the FutureTask class from 
     The first generic is the type of value of the future that is returned by executeFuture().
     The second generic is the type of the parameters given to executeFuture().
 ```java	
-	public class MyFutureTask extends FutureTask<String, Boolean> {
- 
-    		@Override
-    		protected String doInBackgroundFuture(Boolean... arg0) throws Exception {
-        		// Implementation of asynchronous task
-        		String location = LocationService.getLocation(params[0]);
-        		return location;
-    		}
-	}
+public class MyFutureTask extends FutureTask<String, Boolean> {
+
+    @Override
+    protected String doInBackgroundFuture(Boolean... arg0) throws Exception {
+        // Implementation of asynchronous task
+        String location = LocationService.getLocation(params[0]);
+        return location;
+    }
+}
 ```	
 FutureCallable
 ================
 Now we can implement the FutureCallable. You have to implements the onSuccess and onError method. The onSucces method is called when the doInBackgroundFuture method of the FutureTask executes without throwing an exception. When this method does throw an exception the onError method of the FutureCallable will be called.
 
 ```java	
-	public MyFutureCallable implements FutureCallable<String>() {
- 
-		    @Override
-		    public void onError(Exception exception) {
-        		// Handle the exception
-        		exception.printStackTrace();
-    		    }
- 
- 		    @Override
-    	            public void onSucces(String result) {
-        		// Handle the result
-        		myTextView.setText(result);
-    	            }
-	}
+public MyFutureCallable implements FutureCallable<String>() {
+
+    @Override
+    public void onError(Exception exception) {
+        // Handle the exception
+        exception.printStackTrace();
+    }
+
+    @Override
+    public void onSucces(String result) {
+        // Handle the result
+        myTextView.setText(result);
+    }
+}
 ```	
 whenResolved
 ================
 Use the whenResolved function to register the FutureCallable with the future. When the future is resolved the appropriate method from the FutureCallable will be called.
 ```java	
-	public void doSomethingUsingFlibture() {
- 
-    		MyFutureTask myFutureTask = new MyFutureTask();
-    		Future<String> myFuture = myFutureTask.executeFuture("Leuven");
-    		Future.whenResolved(myFuture, new MyFutureCallable<String>());
- 
-	}
+public void doSomethingUsingFlibture() {
+
+    MyFutureTask myFutureTask = new MyFutureTask();
+    Future<String> myFuture = myFutureTask.executeFuture("Leuven");
+    Future.whenResolved(myFuture, new MyFutureCallable<String>());
+
+}
 ```	
 Note: A future object may only be used once, when a future is resolved a new future needs to be used to perform a new task.
